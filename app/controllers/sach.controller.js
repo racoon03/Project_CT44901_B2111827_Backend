@@ -13,13 +13,12 @@ exports.create = async (req, res, next) => {
     const document = await sachService.create(req.body);
     return res.send(document);
   } catch (error) {
-    if (
-      error.message === "Nhà xuất bản không hợp lệ" ||
-      error.message === "Nhà xuất bản không tồn tại trong hệ thống"
-    ) {
-      return next(new ApiError(400, error.message)); // Trả về lỗi 400 nếu MaNXB không hợp lệ
-    }
-    return next(new ApiError(500, "Đã xảy ra lỗi trong quá trình tạo sách"));
+    return next(
+      new ApiError(
+        500,
+        error.message || "Đã xảy ra lỗi trong quá trình tạo sách"
+      )
+    );
   }
 };
 

@@ -5,6 +5,7 @@ const nhanvienRouter = require("./app/routes/nhanvien.route");
 const nxbRouter = require("./app/routes/nxb.route");
 const sachRouter = require("./app/routes/sach.route");
 const docgiaRouter = require("./app/routes/docgia.route");
+const phieumuonRouter = require("./app/routes/phieumuon.route");
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use("/api/nhanvien", nhanvienRouter);
 app.use("/api/nxb", nxbRouter);
 app.use("/api/sach", sachRouter);
 app.use("/api/docgia", docgiaRouter);
+app.use("/api/phieumuon", phieumuonRouter);
 
 // handle 404 response
 app.use((req, res, next) => {
