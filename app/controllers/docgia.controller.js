@@ -139,20 +139,14 @@ exports.deleteAll = async (_req, res, next) => {
   }
 };
 
-// Login a reader using DienThoai and Password
 exports.login = async (req, res, next) => {
   const { DienThoai, Password } = req.body;
-  if (!DienThoai || !Password) {
-    return next(
-      new ApiError(400, "Số điện thoại và mật khẩu không được bỏ trống")
-    );
-  }
 
   try {
-    const docGiaService = new DocGiaService(MongoDB.client);
+    const docGiaService = new DocGiaService(MongoDB.client); // Đảm bảo MongoDB.client được khởi tạo
     const user = await docGiaService.login(DienThoai, Password);
-    return res.send(user);
+    res.status(200).json(user); // Trả về thông tin nếu đăng nhập thành công
   } catch (error) {
-    return next(new ApiError(400, "Số điện thoại hoặc mật khẩu không đúng"));
+    next(new ApiError(400, error.message)); // Trả về lỗi nếu đăng nhập thất bại
   }
 };

@@ -16,8 +16,8 @@ class PhieuMuonService {
       MaSach: ObjectId.isValid(payload.MaSach)
         ? new ObjectId(payload.MaSach)
         : null,
-      NgayMuon: payload.NgayMuon,
-      NgayTra: payload.NgayTra,
+      NgayMuon: payload.NgayMuon ? new Date(payload.NgayMuon) : null, // Chuyển sang Date
+      NgayTra: payload.NgayTra ? new Date(payload.NgayTra) : null,
     };
 
     // Xóa các trường undefined
@@ -49,8 +49,40 @@ class PhieuMuonService {
       throw new Error("Sách không tồn tại trong hệ thống");
     }
 
+    // Kiểm tra số lượng sách
+    if (sachExists.SoQuyen <= 0) {
+      throw new Error("Sách không đủ số lượng để mượn");
+    }
+
+    // Chuyển đổi NgayMuon và NgayTra sang kiểu Date nếu có giá trị hợp lệ
+    if (payload.NgayMuon) {
+      const ngayMuonDate = new Date(payload.NgayMuon);
+      if (!isNaN(ngayMuonDate.getTime())) {
+        phieuMuon.NgayMuon = ngayMuonDate;
+      } else {
+        throw new Error("Định dạng NgayMuon không hợp lệ");
+      }
+    }
+
+    if (payload.NgayTra) {
+      const ngayTraDate = new Date(payload.NgayTra);
+      if (!isNaN(ngayTraDate.getTime())) {
+        phieuMuon.NgayTra = ngayTraDate;
+      } else {
+        throw new Error("Định dạng NgayTra không hợp lệ");
+      }
+    }
+
     try {
+      // Giảm số lượng sách đi 1 trước khi tạo phiếu mượn
+      await this.Sach.updateOne(
+        { _id: phieuMuon.MaSach },
+        { $inc: { SoQuyen: -1 } }
+      );
+
+      // Tạo phiếu mượn
       const result = await this.PhieuMuon.insertOne(phieuMuon);
+
       return { _id: result.insertedId, ...phieuMuon };
     } catch (error) {
       throw error;
@@ -90,7 +122,6 @@ class PhieuMuonService {
       _id: ObjectId.isValid(id) ? new ObjectId(id) : null,
     };
     const update = this.extractPhieuMuonData(payload);
-
     // Kiểm tra tính hợp lệ của MaDocGia
     if (update.MaDocGia) {
       const docGiaExists = await this.DocGia.findOne({ _id: update.MaDocGia });
@@ -105,6 +136,14 @@ class PhieuMuonService {
       if (!sachExists) {
         throw new Error("Sách không tồn tại trong hệ thống");
       }
+    }
+
+    // Chuyển đổi NgayMuon và NgayTra sang kiểu Date nếu có trong payload
+    if (payload.NgayMuon) {
+      update.NgayMuon = new Date(payload.NgayMuon);
+    }
+    if (payload.NgayTra) {
+      update.NgayTra = new Date(payload.NgayTra);
     }
 
     const result = await this.PhieuMuon.findOneAndUpdate(

@@ -139,3 +139,15 @@ exports.deleteAll = async (_req, res, next) => {
     );
   }
 };
+
+exports.login = async (req, res, next) => {
+  const { SoDienThoai, Password } = req.body;
+
+  try {
+    const nhanVienService = new NhanVienService(MongoDB.client); // Đảm bảo MongoDB.client được khởi tạo
+    const user = await nhanVienService.login(SoDienThoai, Password);
+    res.status(200).json(user); // Trả về thông tin nếu đăng nhập thành công
+  } catch (error) {
+    next(new ApiError(400, error.message)); // Trả về lỗi nếu đăng nhập thất bại
+  }
+};

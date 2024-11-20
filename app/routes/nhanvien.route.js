@@ -18,5 +18,7 @@ router
 
 // Route tìm nhân viên theo số điện thoại
 router.route("/phone/:phone").get(nhanvien.findByPhoneNumber); // Tìm nhân viên theo số điện thoại
+// Route đăng nhập độc giả
+router.post("/login", nhanvien.login);
 
 module.exports = router;

@@ -94,13 +94,21 @@ class DocGiaService {
     return result.deletedCount;
   }
 
-  // Phương thức đăng nhập bằng DienThoai và Password
+  /// Phương thức đăng nhập
   async login(DienThoai, Password) {
-    const user = await this.DocGia.findOne({ DienThoai, Password });
+    const user = await this.DocGia.findOne({ DienThoai });
+
     if (!user) {
-      throw new Error("Số điện thoại hoặc mật khẩu không đúng.");
+      throw new Error("Số điện thoại không tồn tại.");
     }
-    return user; // Trả về thông tin độc giả nếu đăng nhập thành công
+
+    if (user.Password !== Password) {
+      throw new Error("Mật khẩu không chính xác.");
+    }
+
+    return {
+      _id: user._id,
+    };
   }
 }
 

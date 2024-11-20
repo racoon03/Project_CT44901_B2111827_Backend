@@ -19,4 +19,7 @@ router
 // Route tìm độc giả theo số điện thoại
 router.route("/phone/:phone").get(docgia.findByPhoneNumber); // Tìm độc giả theo số điện thoại
 
+// Route đăng nhập độc giả
+router.post("/login", docgia.login);
+
 module.exports = router;

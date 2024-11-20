@@ -91,13 +91,21 @@ class NhanVienService {
     return result.deletedCount;
   }
 
-  // Phương thức đăng nhập
+  /// Phương thức đăng nhập
   async login(SoDienThoai, Password) {
-    const user = await this.NhanVien.findOne({ SoDienThoai, Password });
+    const user = await this.NhanVien.findOne({ SoDienThoai });
+
     if (!user) {
-      throw new Error("Số điện thoại hoặc mật khẩu không đúng.");
+      throw new Error("Số điện thoại không tồn tại.");
     }
-    return user; // Trả về tài liệu nhân viên nếu đăng nhập thành công
+
+    if (user.Password !== Password) {
+      throw new Error("Mật khẩu không chính xác.");
+    }
+
+    return {
+      _id: user._id,
+    };
   }
 }
 
